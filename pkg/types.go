@@ -12,32 +12,21 @@ type WithName struct {
 	Name string `json:"name"`
 }
 
-func (w WithName) String() string {
-	return w.Name
-}
-
 type WithTitle struct {
 	Title string `json:"title"`
 }
 
-func (w WithTitle) String() string {
-	return w.Title
-}
-
 type WithUrl struct {
-	Url string `json:"url"`
-}
-
-func (w WithUrl) String() string {
-	return w.Url
+	Url     string `json:"url"`
+	HtmlUrl string `json:"html_url"`
 }
 
 type WithBody struct {
 	Body string `json:"body"`
 }
 
-func (w WithBody) String() string {
-	return w.Body
+type WithAction struct {
+	Action string `json:"action"`
 }
 
 type Ref struct {
@@ -66,16 +55,15 @@ type PullRequest struct {
 	WithUrl   `json:",squash"`
 	WithTitle `json:",squash"`
 	WithBody  `json:",squash"`
-	HtmlUrl   string `json:"html_url"`
-	Head      Ref    `json:"head"`
-	Base      Ref    `json:"base"`
-	Number    int    `json:"number"`
+	Head      Ref `json:"head"`
+	Base      Ref `json:"base"`
+	Number    int `json:"number"`
 }
 
 type IssueCommentPayload struct {
-	Action  string  `json:"action"`
-	Issue   Issue   `json:"issue"`
-	Comment Comment `json:"comment"`
+	WithAction `json:",squash"`
+	Issue      Issue   `json:"issue"`
+	Comment    Comment `json:"comment"`
 }
 
 type PushEventPayload struct {
@@ -89,12 +77,12 @@ type CreateDeleteEventPayload struct {
 }
 
 type PullRequestEventPayload struct {
-	Action      string      `json:"action"`
+	WithAction  `json:",squash"`
 	PullRequest PullRequest `json:"pull_request"`
 }
 
 type PullRequestReviewCommentEventPayload struct {
-	Action      string      `json:"action"`
+	WithAction  `json:",squash"`
 	Comment     Comment     `json:"comment"`
 	PullRequest PullRequest `json:"pull_request"`
 }
@@ -102,4 +90,8 @@ type PullRequestReviewCommentEventPayload struct {
 type IssuesEventPayload struct {
 	Action string `json:"action"`
 	Issue  Issue  `json:"issue"`
+}
+
+type WatchEventPayload struct {
+	WithAction `json:",squash"`
 }
