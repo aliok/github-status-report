@@ -6,6 +6,7 @@ import (
 	"github.com/aliok/github-activities/pkg"
 	"log"
 	"os"
+	"sort"
 )
 
 const DefaultPages = 3
@@ -16,6 +17,7 @@ var (
 	pageCount            = flag.Int("pageCount", DefaultPages, fmt.Sprintf("How many pages should the program get from Github api with pagination? Defaults to %d", DefaultPages))
 	startDate            = flag.String("startDate", "", "Start date for events in format 2020-12-31. If not passed, all will be returned")
 	onlyRelevantToReport = flag.Bool("onlyRelevantToReport", false, "If true, only display events that are relevant for the weekly report (somebody forked my repo, my comments, my PRs, my commits, etc.)")
+	groupByRepo          = flag.Bool("groupByRepo", true, "Group by repo, true by default")
 	verbose              = flag.Bool("verbose", false, "Enable verbose logging")
 )
 
@@ -52,13 +54,46 @@ func main() {
 		events = pkg.Filter(events, *username)
 	}
 
-	// TODO: context (e.g. for isInteresting filter methods)
-	// TODO: sort
-	// TODO: group by repo
+	// sort by date first
+	sort.Slice(events, func(i, j int) bool {
+		return events[i].GetCreatedAt() < events[j].GetCreatedAt()
+	})
+
+	if *groupByRepo {
+		grouped := make(map[string][]pkg.Event)
+		for _, event := range events {
+			repo := event.GetRepo().Name
+			if arr, ok := grouped[repo]; ok {
+				arr = append(arr, event)
+				grouped[repo] = arr
+			} else {
+				arr = make([]pkg.Event, 0)
+				arr = append(arr, event)
+				grouped[repo] = arr
+			}
+		}
+
+		keys := make([]string, 0)
+		for k := range grouped {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		for _, repo := range keys {
+			fmt.Println("=================================================")
+			fmt.Printf("\t\t\t%s\n", repo)
+			fmt.Println("=================================================")
+			for _, event := range grouped[repo] {
+				fmt.Println(event)
+			}
+		}
+	} else {
+		for _, event := range events {
+			fmt.Println(event)
+		}
+	}
+
 	// TODO: logs with verbosity
 	// TODO: warn unhandled event
 
-	for _, event := range events {
-		fmt.Println(event)
-	}
 }

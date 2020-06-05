@@ -5,6 +5,8 @@ import (
 )
 
 type Event interface {
+	GetCreatedAt() string
+	GetRepo() WithName
 	IsRelevantToReport(username string) bool
 }
 
@@ -19,6 +21,14 @@ type BaseEvent struct {
 
 func (e BaseEvent) String() string {
 	return fmt.Sprintf("GENERIC %s - %s - %s at %s", e.CreatedAt, e.Actor, e.Type, e.Repo.Name)
+}
+
+func (e BaseEvent) GetCreatedAt() string {
+	return e.CreatedAt
+}
+
+func (e BaseEvent) GetRepo() WithName {
+	return e.Repo
 }
 
 // -----------------
