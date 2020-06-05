@@ -50,8 +50,12 @@ func main() {
 		events = append(events, event)
 	}
 
+	if *startDate != "" {
+		events = pkg.FilterByDate(events, *startDate)
+	}
+
 	if *onlyRelevantToReport {
-		events = pkg.Filter(events, *username)
+		events = pkg.FilterInteresting(events, *username)
 	}
 
 	// sort by date first
@@ -60,18 +64,7 @@ func main() {
 	})
 
 	if *groupByRepo {
-		grouped := make(map[string][]pkg.Event)
-		for _, event := range events {
-			repo := event.GetRepo().Name
-			if arr, ok := grouped[repo]; ok {
-				arr = append(arr, event)
-				grouped[repo] = arr
-			} else {
-				arr = make([]pkg.Event, 0)
-				arr = append(arr, event)
-				grouped[repo] = arr
-			}
-		}
+		grouped := pkg.GroupByRepo(events)
 
 		keys := make([]string, 0)
 		for k := range grouped {
