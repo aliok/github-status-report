@@ -23,7 +23,8 @@ func Parse(u map[string]interface{}) Event {
 	eventTypeStr := u["type"].(string)
 	eventType := eventMap[eventTypeStr]
 	if eventType == nil {
-		log.Fatalf("Unknown event type:%s", eventTypeStr)
+		log.Print("Unknown event type:%s", eventTypeStr)
+		return nil
 	}
 
 	value := reflect.New(eventType)
@@ -31,7 +32,8 @@ func Parse(u map[string]interface{}) Event {
 	event := i.(Event)
 
 	if err := parseEvent(u, event); err != nil {
-		log.Fatal("Error unmarshalling input", err)
+		log.Print("Error unmarshalling input", err)
+		return nil
 	}
 	return event
 }

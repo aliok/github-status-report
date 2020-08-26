@@ -47,7 +47,9 @@ func main() {
 	events := make([]pkg.Event, 0)
 	for _, u := range unstructuredEvents {
 		event := pkg.Parse(u)
-		events = append(events, event)
+		if event != nil {
+			events = append(events, event)
+		}
 	}
 
 	if *startDate != "" {
