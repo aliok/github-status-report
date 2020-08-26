@@ -18,16 +18,21 @@ var eventMap = map[string]reflect.Type{
 	"PullRequestReviewCommentEvent": reflect.TypeOf(PullRequestReviewCommentEvent{}),
 	"IssuesEvent":                   reflect.TypeOf(IssuesEvent{}),
 	"ReleaseEvent":                  reflect.TypeOf(ReleaseEvent{}),
-	//"PullRequestReviewEvent":        reflect.TypeOf(PullRequestReviewEvent{}),
-	//"MemberEvent":                   reflect.TypeOf(MemberEvent{}),
+	"PullRequestReviewEvent":        reflect.TypeOf(PullRequestReviewEvent{}),
+	"MemberEvent":                   reflect.TypeOf(MemberEvent{}),
 }
 
-func Parse(u map[string]interface{}) Event {
+func Parse(u map[string]interface{}, strict bool) Event {
 	eventTypeStr := u["type"].(string)
 	eventType := eventMap[eventTypeStr]
 	if eventType == nil {
-		log.Print("Unknown event type:%s", eventTypeStr)
-		return nil
+		if strict {
+			log.Fatalf("Unknown event type:%s", eventTypeStr)
+		} else {
+			log.Print("Unknown event type:%s", eventTypeStr)
+			return nil
+		}
+
 	}
 
 	value := reflect.New(eventType)
@@ -35,8 +40,12 @@ func Parse(u map[string]interface{}) Event {
 	event := i.(Event)
 
 	if err := parseEvent(u, event); err != nil {
-		log.Print("Error unmarshalling input", err)
-		return nil
+		if strict {
+			log.Fatal("Error unmarshalling input", err)
+		} else {
+			log.Print("Error unmarshalling input", err)
+			return nil
+		}
 	}
 	return event
 }

@@ -10,6 +10,7 @@ import (
 )
 
 const DefaultPages = 3
+const Strict = true
 
 var (
 	token                = flag.String("token", "", "Github token")
@@ -46,7 +47,7 @@ func main() {
 
 	events := make([]pkg.Event, 0)
 	for _, u := range unstructuredEvents {
-		event := pkg.Parse(u)
+		event := pkg.Parse(u, Strict)
 		if event != nil {
 			events = append(events, event)
 		}

@@ -1,19 +1,13 @@
 package pkg
 
-type User struct {
+// reference: https://developer.github.com/webhooks/event-payloads/
+
+type Actor struct {
 	DisplayLogin string `json:"display_login"`
 }
 
-func (u User) String() string {
-	return u.DisplayLogin
-}
-
-type Actor struct {
-	User
-}
-
-type Member struct {
-	User
+func (a Actor) String() string {
+	return a.DisplayLogin
 }
 
 type WithName struct {
@@ -123,5 +117,5 @@ type PullRequestReviewEventPayload struct {
 
 type MemberEventPayload struct {
 	WithAction `json:",squash"`
-	Member     Member `json:"member"`
+	Member     Actor `json:"member"`
 }
