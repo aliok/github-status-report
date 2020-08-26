@@ -206,3 +206,64 @@ func (e IssuesEvent) String() string {
 func (e IssuesEvent) IsRelevantToReport(username string) bool {
 	return e.Actor.DisplayLogin == username
 }
+
+// -----------------
+
+var _ Event = ReleaseEvent{}
+
+type ReleaseEvent struct {
+	BaseEvent `json:",squash"`
+	Payload   ReleaseEventPayload `json:"payload"`
+}
+
+func (e ReleaseEvent) String() string {
+	res := ""
+	res += fmt.Sprintf("%s - %s %s release at %s - %s\n", e.CreatedAt, e.Actor, e.Payload.Action, e.Repo.Name, e.Payload.Release.Name)
+	res += fmt.Sprintf("\t%s\n", e.Payload.Release.HtmlUrl)
+	res += fmt.Sprintf("\t----\n%s\n\t----", LeftAdjust(e.Payload.Release.Body, "\t"))
+	return res
+}
+
+func (e ReleaseEvent) IsRelevantToReport(username string) bool {
+	return e.Actor.DisplayLogin == username
+}
+
+// -----------------
+
+var _ Event = PullRequestReviewEvent{}
+
+type PullRequestReviewEvent struct {
+	BaseEvent `json:",squash"`
+	Payload   PullRequestReviewEventPayload `json:"payload"`
+}
+
+func (e PullRequestReviewEvent) String() string {
+	res := ""
+	res += fmt.Sprintf("%s - %s %s PR review at %s#%d ", e.CreatedAt, e.Actor, e.Payload.Action, e.Repo.Name, e.Payload.PullRequest.Number)
+	res += fmt.Sprintf("(%s <-- %s)\n", e.Payload.PullRequest.Head.Label, e.Payload.PullRequest.Base.Label)
+	return res
+}
+
+func (e PullRequestReviewEvent) IsRelevantToReport(username string) bool {
+	return e.Actor.DisplayLogin == username
+}
+
+// -----------------
+
+var _ Event = MemberEvent{}
+
+type MemberEvent struct {
+	BaseEvent `json:",squash"`
+	Payload   MemberEventPayload `json:"payload"`
+}
+
+func (e MemberEvent) String() string {
+	res := ""
+	res += fmt.Sprintf("%s - %s %s member at %s ", e.CreatedAt, e.Actor, e.Payload.Action, e.Repo.Name)
+	res += fmt.Sprintf("(Member: %s)\n", e.Payload.Member)
+	return res
+}
+
+func (e MemberEvent) IsRelevantToReport(username string) bool {
+	return e.Actor.DisplayLogin == username
+}

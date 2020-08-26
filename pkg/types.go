@@ -1,11 +1,19 @@
 package pkg
 
-type Actor struct {
+type User struct {
 	DisplayLogin string `json:"display_login"`
 }
 
-func (a Actor) String() string {
-	return a.DisplayLogin
+func (u User) String() string {
+	return u.DisplayLogin
+}
+
+type Actor struct {
+	User
+}
+
+type Member struct {
+	User
 }
 
 type WithName struct {
@@ -60,6 +68,13 @@ type PullRequest struct {
 	Number    int `json:"number"`
 }
 
+type Release struct {
+	WithUrl  `json:",squash"`
+	WithBody `json:",squash"`
+	WithName `json:",squash"`
+	TagName  string `json:"tag_name"`
+}
+
 type IssueCommentPayload struct {
 	WithAction `json:",squash"`
 	Issue      Issue   `json:"issue"`
@@ -94,4 +109,19 @@ type IssuesEventPayload struct {
 
 type WatchEventPayload struct {
 	WithAction `json:",squash"`
+}
+
+type ReleaseEventPayload struct {
+	WithAction `json:",squash"`
+	Release    Release `json:"release"`
+}
+
+type PullRequestReviewEventPayload struct {
+	WithAction  `json:",squash"`
+	PullRequest PullRequest `json:"pull_request"`
+}
+
+type MemberEventPayload struct {
+	WithAction `json:",squash"`
+	Member     Member `json:"member"`
 }

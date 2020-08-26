@@ -17,6 +17,9 @@ var eventMap = map[string]reflect.Type{
 	"PullRequestEvent":              reflect.TypeOf(PullRequestEvent{}),
 	"PullRequestReviewCommentEvent": reflect.TypeOf(PullRequestReviewCommentEvent{}),
 	"IssuesEvent":                   reflect.TypeOf(IssuesEvent{}),
+	"ReleaseEvent":                  reflect.TypeOf(ReleaseEvent{}),
+	//"PullRequestReviewEvent":        reflect.TypeOf(PullRequestReviewEvent{}),
+	//"MemberEvent":                   reflect.TypeOf(MemberEvent{}),
 }
 
 func Parse(u map[string]interface{}) Event {
